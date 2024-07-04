@@ -19,7 +19,10 @@
         "lint:fix": "eslint --fix src/** packages/*/src/**"
     },
     "workspaces": [
-        "./packages/quicktype-core"
+        "./packages/quicktype-core",
+        "./packages/quicktype-graphql-input",
+        "./packages/quicktype-typescript-input",
+        "./packages/quicktype-vscode"
     ],
     "dependencies": {
         "@glideapps/ts-necessities": "^2.2.3",

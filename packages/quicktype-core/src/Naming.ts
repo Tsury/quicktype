@@ -157,19 +157,19 @@ export class Namer {
 }
 
 const funPrefixes = [
-    "Purple",
-    "Fluffy",
-    "Tentacled",
-    "Sticky",
-    "Indigo",
-    "Indecent",
-    "Hilarious",
-    "Ambitious",
-    "Cunning",
-    "Magenta",
-    "Frisky",
-    "Mischievous",
-    "Braggadocious"
+    "QTCHANGEME00",
+    "QTCHANGEME01",
+    "QTCHANGEME02",
+    "QTCHANGEME03",
+    "QTCHANGEME04",
+    "QTCHANGEME05",
+    "QTCHANGEME06",
+    "QTCHANGEME07",
+    "QTCHANGEME08",
+    "QTCHANGEME09",
+    "QTCHANGEME10",
+    "QTCHANGEME11",
+    "QTCHANGEME12"
 ];
 
 export function funPrefixNamer(name: string, nameStyle: NameStyle): Namer {

@@ -50,6 +50,20 @@ const assignedEnumCaseNameOrder = 10;
 
 const unionMemberNameOrder = 40;
 
+const npcDotaHeroPrefix = 'npc_dota_hero_';
+
+function fuseStrings(A, B) {
+    for (let i = 0; i < A.length; i++) {
+        const substringA = A.substring(i);
+
+        if (B.startsWith(substringA)) {
+            return A.substring(0, i) + B;
+        }
+    }
+
+    return A + B;
+}
+
 function splitDescription(descriptions: Iterable<string> | undefined): string[] | undefined {
     if (descriptions === undefined) return undefined;
     const description = Array.from(descriptions).join("\n\n").trim();
@@ -221,6 +235,9 @@ export abstract class ConvenienceRenderer extends Renderer {
     }
 
     protected setUpNaming(): ReadonlySet<Namespace> {
+        const firstValue = this.topLevels.keys().next().value;
+        this._npcDotaHeroRoot = firstValue.startsWith(npcDotaHeroPrefix) ? firstValue : '';
+
         this._nameStoreView = new TypeAttributeStoreView(this.typeGraph.attributeStore, assignedNameAttributeKind);
         this._propertyNamesStoreView = new TypeAttributeStoreView(
             this.typeGraph.attributeStore,
@@ -305,6 +322,33 @@ export abstract class ConvenienceRenderer extends Renderer {
     private makeNameForType(t: Type, namer: Namer, givenOrder: number, inferredOrder: number): Name {
         const names = t.getNames();
         const order = names.areInferred ? inferredOrder : givenOrder;
+
+        if (this._npcDotaHeroRoot) {
+            const namesValues = Array.from(names.names);
+
+            if (!namesValues.find(x => x.startsWith(this._npcDotaHeroRoot))) {
+                const goodAlternativeNames = Array.from(names._alternativeNames).filter(x => !x.endsWith('_class'));
+
+                let parentNames = null;
+
+                try {
+                    parentNames = this.nameForNamedType((Array.from(t.getParentTypes())[0]));
+                } catch (e) {
+                    // This is an element in an array - there's no parent.
+                    goodAlternativeNames[0] = this._npcDotaHeroRoot + "_" + goodAlternativeNames[0].substring(0, goodAlternativeNames[0].length - '_element'.length);
+                }
+
+                let newTypeName = goodAlternativeNames[0];
+
+                if (parentNames?._unstyledNames && Array.from(parentNames._unstyledNames).length) {
+                    newTypeName = fuseStrings((Array.from(parentNames._unstyledNames))[0], goodAlternativeNames[0]);
+                }
+
+                names._alternativeNames = new Set([newTypeName]);
+                names.names = new Set([newTypeName]);
+            }
+        }
+
         return new SimpleName(names.proposedNames, namer, order);
     }
 
